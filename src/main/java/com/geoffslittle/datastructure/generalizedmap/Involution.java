@@ -1,81 +1,44 @@
 package com.geoffslittle.datastructure.generalizedmap;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
-import lombok.NonNull;
 
-import java.util.Collections;
-import java.util.Map;
+import java.util.AbstractMap;
+import java.util.Optional;
+import java.util.Set;
 
-/*
- * This is a partial involution without fixed point.
- */
-public class Involution<E> {
+public class Involution<E> extends AbstractMap<E, Optional<E>>  {
 
-    private final Map<E, E> mappings;
+    private final SafeMap<E, E> safeMap;
 
     private Involution() {
-        this.mappings = Maps.newHashMap();
+        this.safeMap = SafeMap.newSafeMap();
     }
 
     public static <E> Involution<E> newInvolution() {
         return new Involution<E>();
     }
 
-    public Map<E, E> mappings() {
-        return Collections.unmodifiableMap(mappings);
+    @Override
+    public Set<Entry<E, Optional<E>>> entrySet() {
+        return safeMap.entrySet();
     }
 
-    public void addMapping(@NonNull E element, E coelement) {
-        assertElementHasNoCoelement(element);
-        // Mapping an element to the empty set (null) is allowed
-        if (coelement != null) {
-            // Fixed point not allowed
-            Preconditions.checkState(!element.equals(coelement), "Cannot add mapping from element to same element");
-            assertElementDoesntExist(coelement);
+    @Override
+    public Optional<E> put(E key, Optional<E> value) {
+        // Prohibit fixed points
+        value.ifPresent(valueGuts -> Preconditions.checkState(!key.equals(valueGuts),
+                "Cannot add mapping from element to same element"));
 
-            mappings.put(coelement, element);
-        }
-        mappings.put(element, coelement);
+        // Add inverse
+        value.ifPresent(valueGuts -> safeMap.put(valueGuts, Optional.of(key)));
+        return safeMap.put(key, value);
     }
 
-    public void removeMapping(@NonNull E element) {
-        assertElementExists(element);
-        E coelement = mappings.get(element);
-        // This element may be mapped to the empty set
-        if (coelement != null) {
-            // We can assume that since the element is mapped to the coelement, that the reverse is also true
-            mappings.remove(coelement);
-        }
-        mappings.remove(element);
-    }
-
-    public Involution inverse() {
-        Involution inverse = Involution.newInvolution();
-        for (Map.Entry<E, E> mapping : mappings.entrySet()) {
-            if (mapping.getValue() != null) {
-                inverse.addMapping(mapping.getValue(), mapping.getKey());
-            }
-        }
-        return inverse;
-    }
-
-    private void assertElementExists(@NonNull E element) {
-        Preconditions.checkState(mappings.containsKey(element), "Element doesn't exist");
-    }
-
-    private void assertElementDoesntExist(@NonNull E element) {
-        Preconditions.checkState(!mappings.containsKey(element), "Element already exists");
-    }
-
-    private void assertElementHasNoCoelement(E element) {
-        Preconditions.checkState(mappings.get(element) == null, "This element has a coelement");
-    }
-
-    private void assertInverse(@NonNull E element, @NonNull E coelement) {
-        Preconditions.checkState(mappings.get(element).equals(coelement), "This element doesn't map to the coelement");
-        Preconditions.checkState(mappings.get(coelement).equals(element),
-                "This coelement doesn't map to the element");
+    @Override
+    public Optional<E> remove(Object key) {
+        // Remove inverse
+        safeMap.get(key).ifPresent(coelementGuts -> safeMap.remove(coelementGuts));
+        return safeMap.remove(key);
     }
 
 }
