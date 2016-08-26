@@ -8,39 +8,18 @@ import lombok.Value;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Queue;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * This implementation of an n-Gmap guarantees that any interaction with an n-GMap produces a valid n-GMap
  */
 public class NGMap {
-
-
-    private final Iterator<Integer> ids = new Iterator<Integer>() {
-
-        private int i = 1;
-
-        @Override
-        public boolean hasNext() {
-            return true;
-        }
-
-        @Override
-        public Integer next() {
-            return i++;
-        }
-    };
 
     /**
      * The list of alphas that define the mappings of the n-Gmap. We assume each alpha to be a partial involution
@@ -50,7 +29,7 @@ public class NGMap {
     public final List<Involution<Dart>> alphas;
 
     private NGMap() {
-        this.alphas = newArrayList(Involution.involution());
+        this.alphas = Lists.newArrayList(Involution.involution());
     }
 
     /**
@@ -134,7 +113,13 @@ public class NGMap {
     }
 
     public Iterator<Dart> genericIterator(@NonNull Dart dart, @NonNull List<Integer> ints) {
-        return GenericDartIterator.genericDartIterator(dart, intsToAlphas(ints));
+        Function<Dart, List<Dart>> f = d -> intsToAlphas(ints).stream()
+                .map(alpha -> alpha.get(d))
+                // TODO: When Java 9 is released, the filtering and mapping of Optionals should be easier
+                .filter(o -> o.isPresent())
+                .map(o -> o.get())
+                .collect(Collectors.toList());
+        return BreadthFirstSearch.breadthFirstSearch(dart, f);
     }
 
     /**
@@ -161,8 +146,7 @@ public class NGMap {
             rightOrbit.add(rightCurr);
             iso.put(leftCurr, rightCurr);
             for (Involution<Dart> alpha : alphas) {
-                if (iso.containsKey(alpha.get(leftCurr)) &&
-                        !iso.get(alpha.get(leftCurr)).equals(alpha.get(rightCurr))) {
+                if (iso.containsKey(alpha.get(leftCurr)) && !iso.get(alpha.get(leftCurr)).equals(alpha.get(rightCurr))) {
                     return false;
                 }
             }
@@ -233,60 +217,21 @@ public class NGMap {
         }
     }
 
+    private final Iterator<Integer> ids = new Iterator<Integer>() {
+        private int i = 1;
+        @Override
+        public boolean hasNext() {
+            return true;
+        }
+        @Override
+        public Integer next() {
+            return i++;
+        }
+    };
+
     @Value
     public final class Dart {
         private final int id;
-    }
-
-    public static class GenericDartIterator implements Iterator<Dart> {
-
-        private final Queue<Dart> queue;
-        private final Set<Dart> seen;
-        private final List<Involution<Dart>> alphas;
-
-        private GenericDartIterator(Queue<Dart> queue, Set<Dart> seen, List<Involution<Dart>> alphas) {
-            this.queue = queue;
-            this.seen = seen;
-            this.alphas = alphas;
-        }
-
-        public static final Iterator<Dart> genericDartIterator(@NonNull Dart sourceDart,
-                @NonNull List<Involution<Dart>> alphas) {
-            Queue<Dart> queue = new LinkedList<>();
-            queue.add(sourceDart);
-            return new GenericDartIterator(queue, new HashSet<>(), alphas);
-        }
-
-        @Override
-        public boolean hasNext() {
-            return !queue.isEmpty();
-        }
-
-        @Override
-        public Dart next() {
-            if (!hasNext()) {
-                // Can't continue if there is no "next"
-                throw new NoSuchElementException();
-            }
-            // Grab a dart from the top of the queue
-            Dart current = queue.poll();
-            // Check if we've already processed this dart
-            if (!seen.contains(current)) {
-                // Get the orbit of the current dart as defined by the given list of alphas
-                for (Involution<Dart> alpha : alphas) {
-                    Optional<Dart> next = alpha.get(current);
-                    // Not sure if I should need to check if the queue doesn't contain it the current's neighbor
-                    // If not, though, there could be a unseen dart which is the neighbor of two darts that are visited,
-                    // effectively adding the unseen dart to the queue twice.  This is bad because we always draw and
-                    // return the top of the queue.
-                    if (next.isPresent() && !seen.contains(next.get()) && !queue.contains(next.get())) {
-                        queue.offer(next.get());
-                    }
-                }
-                seen.add(current);
-            }
-            return current;
-        }
     }
 
 }
