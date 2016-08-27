@@ -104,8 +104,8 @@ public class NGMapTest {
     }
 
     @Test
-    public void sewTwoDartsNonIsolatedAndReachable() {
-        NGMap ngMap = NGMap.ngMap();
+    public <A> void sewTwoDartsNonIsolatedAndReachable() {
+        NGMap<A> ngMap = NGMap.ngMap();
         NGMap.Dart leftDart = ngMap.addIsolatedDart();
         NGMap.Dart rightDart = ngMap.addIsolatedDart();
 
@@ -123,8 +123,8 @@ public class NGMapTest {
     }
 
     @Test
-    public void unsewTwoDarts() {
-        NGMap ngMap = NGMap.ngMap();
+    public <A> void unsewTwoDarts() {
+        NGMap<A> ngMap = NGMap.ngMap();
         NGMap.Dart leftDart = ngMap.addIsolatedDart();
         NGMap.Dart rightDart = ngMap.addIsolatedDart();
 
@@ -146,8 +146,8 @@ public class NGMapTest {
     }
 
     @Test
-    public void create1DManifoldWith3VerticesAnd2Edges() {
-        NGMap ngMap = NGMap.ngMap(1);
+    public <A> void create1DManifoldWith3VerticesAnd2Edges() {
+        NGMap<A> ngMap = NGMap.ngMap(1);
         NGMap.Dart dart1 = ngMap.addIsolatedDart();
         NGMap.Dart dart2 = ngMap.addIsolatedDart();
         NGMap.Dart dart3 = ngMap.addIsolatedDart();
@@ -157,25 +157,25 @@ public class NGMapTest {
         ngMap.sew(dart3, dart4, 0);
         ngMap.sew(dart2, dart3, 1);
 
-        Set<NGMap.Dart> vertex1 = Sets.newHashSet(ngMap.genericIterator(dart1, Lists.newArrayList(1)));
+        Set<NGMap.Dart> vertex1 = Sets.newHashSet(ngMap.iCell(dart1, 0));
         assertEquals(Sets.newHashSet(dart1), vertex1);
 
-        Set<NGMap.Dart> vertex2 = Sets.newHashSet(ngMap.genericIterator(dart2, Lists.newArrayList(1)));
+        Set<NGMap.Dart> vertex2 = Sets.newHashSet(ngMap.iCell(dart2, 0));
         assertEquals(Sets.newHashSet(dart2, dart3), vertex2);
 
-        Set<NGMap.Dart> vertex3 = Sets.newHashSet(ngMap.genericIterator(dart4, Lists.newArrayList(1)));
+        Set<NGMap.Dart> vertex3 = Sets.newHashSet(ngMap.iCell(dart4, 0));
         assertEquals(Sets.newHashSet(dart4), vertex3);
 
-        Set<NGMap.Dart> edge1 = Sets.newHashSet(ngMap.genericIterator(dart1, Lists.newArrayList(0)));
+        Set<NGMap.Dart> edge1 = Sets.newHashSet(ngMap.iCell(dart1, 1));
         assertEquals(Sets.newHashSet(dart1, dart2), edge1);
 
-        Set<NGMap.Dart> edge2 = Sets.newHashSet(ngMap.genericIterator(dart3, Lists.newArrayList(0)));
+        Set<NGMap.Dart> edge2 = Sets.newHashSet(ngMap.iCell(dart3, 1));
         assertEquals(Sets.newHashSet(dart3, dart4), edge2);
     }
 
     @Test
-    public void create2DManifoldWith4Vertices5EdgesAnd2Faces() {
-        NGMap ngMap = NGMap.ngMap(2);
+    public <A> void create2DManifoldWith4Vertices5EdgesAnd2Faces() {
+        NGMap<A> ngMap = NGMap.ngMap(2);
         NGMap.Dart dart1 = ngMap.addIsolatedDart();
         NGMap.Dart dart2 = ngMap.addIsolatedDart();
         NGMap.Dart dart3 = ngMap.addIsolatedDart();
@@ -215,298 +215,280 @@ public class NGMapTest {
 
 
         // Validate vertices 1-4
-        Set<NGMap.Dart> vertex1 = Sets.newHashSet(ngMap.genericIterator(dart1, Lists.newArrayList(1, 2)));
+        Set<NGMap.Dart> vertex1 = Sets.newHashSet(ngMap.iCell(dart1, 0));
         assertEquals(Sets.newHashSet(dart1, dart6, dart7, dart12), vertex1);
 
-        Set<NGMap.Dart> vertex2 = Sets.newHashSet(ngMap.genericIterator(dart2, Lists.newArrayList(1, 2)));
+        Set<NGMap.Dart> vertex2 = Sets.newHashSet(ngMap.iCell(dart2, 0));
         assertEquals(Sets.newHashSet(dart2, dart3, dart8, dart9), vertex2);
 
-        Set<NGMap.Dart> vertex3 = Sets.newHashSet(ngMap.genericIterator(dart4, Lists.newArrayList(1, 2)));
+        Set<NGMap.Dart> vertex3 = Sets.newHashSet(ngMap.iCell(dart4, 0));
         assertEquals(Sets.newHashSet(dart4, dart5), vertex3);
 
-        Set<NGMap.Dart> vertex4 = Sets.newHashSet(ngMap.genericIterator(dart10, Lists.newArrayList(1, 2)));
+        Set<NGMap.Dart> vertex4 = Sets.newHashSet(ngMap.iCell(dart10, 0));
         assertEquals(Sets.newHashSet(dart10, dart11), vertex4);
 
         // Validate edges 1-5
-        Set<NGMap.Dart> edge1 = Sets.newHashSet(ngMap.genericIterator(dart1, Lists.newArrayList(0, 2)));
+        Set<NGMap.Dart> edge1 = Sets.newHashSet(ngMap.iCell(dart1, 1));
         assertEquals(Sets.newHashSet(dart1, dart2, dart7, dart8), edge1);
 
-        Set<NGMap.Dart> edge2 = Sets.newHashSet(ngMap.genericIterator(dart3, Lists.newArrayList(0, 2)));
+        Set<NGMap.Dart> edge2 = Sets.newHashSet(ngMap.iCell(dart3, 1));
         assertEquals(Sets.newHashSet(dart3, dart4), edge2);
 
-        Set<NGMap.Dart> edge3 = Sets.newHashSet(ngMap.genericIterator(dart5, Lists.newArrayList(0, 2)));
+        Set<NGMap.Dart> edge3 = Sets.newHashSet(ngMap.iCell(dart5, 1));
         assertEquals(Sets.newHashSet(dart5, dart6), edge3);
 
-        Set<NGMap.Dart> edge4 = Sets.newHashSet(ngMap.genericIterator(dart9, Lists.newArrayList(0, 2)));
+        Set<NGMap.Dart> edge4 = Sets.newHashSet(ngMap.iCell(dart9, 1));
         assertEquals(Sets.newHashSet(dart9, dart10), edge4);
 
-        Set<NGMap.Dart> edge5 = Sets.newHashSet(ngMap.genericIterator(dart11, Lists.newArrayList(0, 2)));
+        Set<NGMap.Dart> edge5 = Sets.newHashSet(ngMap.iCell(dart11, 1));
         assertEquals(Sets.newHashSet(dart11, dart12), edge5);
 
         // Validate faces 1-2
-        Set<NGMap.Dart> face1 = Sets.newHashSet(ngMap.genericIterator(dart1, Lists.newArrayList(0, 1)));
+        Set<NGMap.Dart> face1 = Sets.newHashSet(ngMap.iCell(dart1, 2));
         assertEquals(Sets.newHashSet(dart1, dart2, dart3, dart4, dart5, dart6), face1);
 
-        Set<NGMap.Dart> face2 = Sets.newHashSet(ngMap.genericIterator(dart7, Lists.newArrayList(0, 1)));
+        Set<NGMap.Dart> face2 = Sets.newHashSet(ngMap.iCell(dart7, 2));
         assertEquals(Sets.newHashSet(dart7, dart8, dart9, dart10, dart11, dart12), face2);
     }
 
     @Test
-    public void cubeHas8Vertices12Edges6Faces() {
-        NGMap ngMap = NGMap.ngMap(3);
+    public <A> void cubeHas8Vertices12Edges6Faces() {
+        NGMap<A> ngMap = NGMap.ngMap(3);
         Cube cube = addCube(ngMap);
 
         // 8 vertices
-        Set<NGMap.Dart> vertex1 = Sets.newHashSet(ngMap.genericIterator(cube._1._1._1, Lists.newArrayList(1, 2, 3)));
+        Set<NGMap.Dart> vertex1 = Sets.newHashSet(ngMap.iCell(cube._1._1._1, 0));
         assertEquals(Sets.newHashSet(cube._1._1._1, cube._1._4._2, cube._2._3._2, cube._2._4._1, cube._5._1._2,
                 cube._5._2._1), vertex1);
 
-        Set<NGMap.Dart> vertex2 = Sets.newHashSet(ngMap.genericIterator(cube._1._1._2, Lists.newArrayList(1, 2, 3)));
+        Set<NGMap.Dart> vertex2 = Sets.newHashSet(ngMap.iCell(cube._1._1._2, 0));
         assertEquals(Sets.newHashSet(cube._1._1._2, cube._1._2._1, cube._2._2._2, cube._2._3._1, cube._3._1._1,
                 cube._3._4._2), vertex2);
 
-        Set<NGMap.Dart> vertex3 = Sets.newHashSet(ngMap.genericIterator(cube._1._2._2, Lists.newArrayList(1, 2, 3)));
+        Set<NGMap.Dart> vertex3 = Sets.newHashSet(ngMap.iCell(cube._1._2._2, 0));
         assertEquals(Sets.newHashSet(cube._1._2._2, cube._1._3._1, cube._3._4._1, cube._3._3._2, cube._4._1._2,
                 cube._4._2._1), vertex3);
 
-        Set<NGMap.Dart> vertex4 = Sets.newHashSet(ngMap.genericIterator(cube._1._3._2, Lists.newArrayList(1, 2, 3)));
+        Set<NGMap.Dart> vertex4 = Sets.newHashSet(ngMap.iCell(cube._1._3._2, 0));
         assertEquals(Sets.newHashSet(cube._1._3._2, cube._1._4._1, cube._4._1._1, cube._4._4._2, cube._5._2._2,
                 cube._5._3._1), vertex4);
 
-        Set<NGMap.Dart> vertex5 = Sets.newHashSet(ngMap.genericIterator(cube._2._1._1, Lists.newArrayList(1, 2, 3)));
+        Set<NGMap.Dart> vertex5 = Sets.newHashSet(ngMap.iCell(cube._2._1._1, 0));
         assertEquals(Sets.newHashSet(cube._2._1._1, cube._2._4._2, cube._5._1._1, cube._5._4._2, cube._6._3._2,
                 cube._6._4._1), vertex5);
 
-        Set<NGMap.Dart> vertex6 = Sets.newHashSet(ngMap.genericIterator(cube._2._1._2, Lists.newArrayList(1, 2, 3)));
+        Set<NGMap.Dart> vertex6 = Sets.newHashSet(ngMap.iCell(cube._2._1._2, 0));
         assertEquals(Sets.newHashSet(cube._2._1._2, cube._2._2._1, cube._3._1._2, cube._3._2._1, cube._6._2._2,
                 cube._6._3._1), vertex6);
 
-        Set<NGMap.Dart> vertex7 = Sets.newHashSet(ngMap.genericIterator(cube._4._2._2, Lists.newArrayList(1, 2, 3)));
+        Set<NGMap.Dart> vertex7 = Sets.newHashSet(ngMap.iCell(cube._4._2._2, 0));
         assertEquals(Sets.newHashSet(cube._4._2._2, cube._4._3._1, cube._3._2._2, cube._3._3._1, cube._6._1._2,
                 cube._6._2._1), vertex7);
 
-        Set<NGMap.Dart> vertex8 = Sets.newHashSet(ngMap.genericIterator(cube._4._3._2, Lists.newArrayList(1, 2, 3)));
+        Set<NGMap.Dart> vertex8 = Sets.newHashSet(ngMap.iCell(cube._4._3._2, 0));
         assertEquals(Sets.newHashSet(cube._4._3._2, cube._4._4._1, cube._5._3._2, cube._5._4._1, cube._6._1._1,
                 cube._6._4._2), vertex8);
 
         // 12 edges
-        Set<NGMap.Dart> edge1 = Sets.newHashSet(ngMap.genericIterator(cube._1._1._1, Lists.newArrayList(0, 2, 3)));
+        Set<NGMap.Dart> edge1 = Sets.newHashSet(ngMap.iCell(cube._1._1._1, 1));
         assertEquals(Sets.newHashSet(cube._1._1._1, cube._1._1._2, cube._2._3._1, cube._2._3._2), edge1);
 
-        Set<NGMap.Dart> edge2 = Sets.newHashSet(ngMap.genericIterator(cube._1._2._1, Lists.newArrayList(0, 2, 3)));
+        Set<NGMap.Dart> edge2 = Sets.newHashSet(ngMap.iCell(cube._1._2._1, 1));
         assertEquals(Sets.newHashSet(cube._1._2._1, cube._1._2._2, cube._3._4._1, cube._3._4._2), edge2);
 
-        Set<NGMap.Dart> edge3 = Sets.newHashSet(ngMap.genericIterator(cube._1._3._1, Lists.newArrayList(0, 2, 3)));
+        Set<NGMap.Dart> edge3 = Sets.newHashSet(ngMap.iCell(cube._1._3._1, 1));
         assertEquals(Sets.newHashSet(cube._1._3._1, cube._1._3._2, cube._4._1._1, cube._4._1._2), edge3);
 
-        Set<NGMap.Dart> edge4 = Sets.newHashSet(ngMap.genericIterator(cube._1._4._1, Lists.newArrayList(0, 2, 3)));
+        Set<NGMap.Dart> edge4 = Sets.newHashSet(ngMap.iCell(cube._1._4._1, 1));
         assertEquals(Sets.newHashSet(cube._1._4._1, cube._1._4._2, cube._5._2._1, cube._5._2._2), edge4);
 
-        Set<NGMap.Dart> edge5 = Sets.newHashSet(ngMap.genericIterator(cube._2._4._1, Lists.newArrayList(0, 2, 3)));
+        Set<NGMap.Dart> edge5 = Sets.newHashSet(ngMap.iCell(cube._2._4._1, 1));
         assertEquals(Sets.newHashSet(cube._2._4._1, cube._2._4._2, cube._5._1._1, cube._5._1._2), edge5);
 
-        Set<NGMap.Dart> edge6 = Sets.newHashSet(ngMap.genericIterator(cube._2._2._1, Lists.newArrayList(0, 2, 3)));
+        Set<NGMap.Dart> edge6 = Sets.newHashSet(ngMap.iCell(cube._2._2._1, 1));
         assertEquals(Sets.newHashSet(cube._2._2._1, cube._2._2._2, cube._3._1._1, cube._3._1._2), edge6);
 
-        Set<NGMap.Dart> edge7 = Sets.newHashSet(ngMap.genericIterator(cube._3._3._1, Lists.newArrayList(0, 2, 3)));
+        Set<NGMap.Dart> edge7 = Sets.newHashSet(ngMap.iCell(cube._3._3._1, 1));
         assertEquals(Sets.newHashSet(cube._3._3._1, cube._3._3._2, cube._4._2._1, cube._4._2._2), edge7);
 
-        Set<NGMap.Dart> edge8 = Sets.newHashSet(ngMap.genericIterator(cube._4._4._1, Lists.newArrayList(0, 2, 3)));
+        Set<NGMap.Dart> edge8 = Sets.newHashSet(ngMap.iCell(cube._4._4._1, 1));
         assertEquals(Sets.newHashSet(cube._4._4._1, cube._4._4._2, cube._5._3._1, cube._5._3._2), edge8);
 
         // 6 faces
-        Set<NGMap.Dart> face1 = Sets.newHashSet(ngMap.genericIterator(cube._1._1._1, Lists.newArrayList(0, 1, 3)));
+        Set<NGMap.Dart> face1 = Sets.newHashSet(ngMap.iCell(cube._1._1._1, 2));
         assertEquals(Sets.newHashSet(cube._1._1._1, cube._1._1._2, cube._1._2._1, cube._1._2._2, cube._1._3._1,
                 cube._1._3._2, cube._1._4._1, cube._1._4._2), face1);
 
-        Set<NGMap.Dart> face2 = Sets.newHashSet(ngMap.genericIterator(cube._2._1._1, Lists.newArrayList(0, 1, 3)));
+        Set<NGMap.Dart> face2 = Sets.newHashSet(ngMap.iCell(cube._2._1._1, 2));
         assertEquals(Sets.newHashSet(cube._2._1._1, cube._2._1._2, cube._2._2._1, cube._2._2._2, cube._2._3._1,
                 cube._2._3._2, cube._2._4._1, cube._2._4._2), face2);
 
-        Set<NGMap.Dart> face3 = Sets.newHashSet(ngMap.genericIterator(cube._3._1._1, Lists.newArrayList(0, 1, 3)));
+        Set<NGMap.Dart> face3 = Sets.newHashSet(ngMap.iCell(cube._3._1._1, 2));
         assertEquals(Sets.newHashSet(cube._3._1._1, cube._3._1._2, cube._3._2._1, cube._3._2._2, cube._3._3._1,
                 cube._3._3._2, cube._3._4._1, cube._3._4._2), face3);
 
-        Set<NGMap.Dart> face4 = Sets.newHashSet(ngMap.genericIterator(cube._4._1._1, Lists.newArrayList(0, 1, 3)));
+        Set<NGMap.Dart> face4 = Sets.newHashSet(ngMap.iCell(cube._4._1._1, 2));
         assertEquals(Sets.newHashSet(cube._4._1._1, cube._4._1._2, cube._4._2._1, cube._4._2._2, cube._4._3._1,
                 cube._4._3._2, cube._4._4._1, cube._4._4._2), face4);
 
-        Set<NGMap.Dart> face5 = Sets.newHashSet(ngMap.genericIterator(cube._5._1._1, Lists.newArrayList(0, 1, 3)));
+        Set<NGMap.Dart> face5 = Sets.newHashSet(ngMap.iCell(cube._5._1._1, 2));
         assertEquals(Sets.newHashSet(cube._5._1._1, cube._5._1._2, cube._5._2._1, cube._5._2._2, cube._5._3._1,
                 cube._5._3._2, cube._5._4._1, cube._5._4._2), face5);
 
-        Set<NGMap.Dart> face6 = Sets.newHashSet(ngMap.genericIterator(cube._6._1._1, Lists.newArrayList(0, 1, 3)));
+        Set<NGMap.Dart> face6 = Sets.newHashSet(ngMap.iCell(cube._6._1._1, 2));
         assertEquals(Sets.newHashSet(cube._6._1._1, cube._6._1._2, cube._6._2._1, cube._6._2._2, cube._6._3._1,
                 cube._6._3._2, cube._6._4._1, cube._6._4._2), face6);
 
     }
 
     @Test
-    public void pyramidHas5Vertices8Edges5Faces() {
-        NGMap ngMap = NGMap.ngMap(3);
+    public <A> void pyramidHas5Vertices8Edges5Faces() {
+        NGMap<A> ngMap = NGMap.ngMap(3);
         Pyramid pyramid = addPyramid(ngMap);
 
         // 5 vertices
-        Set<NGMap.Dart> vertex1 = Sets.newHashSet(ngMap.genericIterator(pyramid.square._1._1,
-                Lists.newArrayList(1, 2, 3)));
+        Set<NGMap.Dart> vertex1 = Sets.newHashSet(ngMap.iCell(pyramid.square._1._1, 0));
         assertEquals(Sets.newHashSet(pyramid.square._1._1, pyramid.square._4._2, pyramid.triangle1._1._1,
                 pyramid.triangle1._3._2, pyramid.triangle4._1._2, pyramid.triangle4._2._1), vertex1);
 
-        Set<NGMap.Dart> vertex2 = Sets.newHashSet(ngMap.genericIterator(pyramid.square._1._2,
-                Lists.newArrayList(1, 2, 3)));
+        Set<NGMap.Dart> vertex2 = Sets.newHashSet(ngMap.iCell(pyramid.square._1._2, 0));
         assertEquals(Sets.newHashSet(pyramid.square._1._2, pyramid.square._2._1, pyramid.triangle1._2._2,
                 pyramid.triangle1._3._1, pyramid.triangle2._1._2, pyramid.triangle2._2._1), vertex2);
 
-        Set<NGMap.Dart> vertex3 = Sets.newHashSet(ngMap.genericIterator(pyramid.square._2._2,
-                Lists.newArrayList(1, 2, 3)));
+        Set<NGMap.Dart> vertex3 = Sets.newHashSet(ngMap.iCell(pyramid.square._2._2, 0));
         assertEquals(Sets.newHashSet(pyramid.square._2._2, pyramid.square._3._1, pyramid.triangle2._1._1,
                 pyramid.triangle2._3._2, pyramid.triangle3._1._2, pyramid.triangle3._2._1), vertex3);
 
-        Set<NGMap.Dart> vertex4 = Sets.newHashSet(ngMap.genericIterator(pyramid.square._3._2,
-                Lists.newArrayList(1, 2, 3)));
+        Set<NGMap.Dart> vertex4 = Sets.newHashSet(ngMap.iCell(pyramid.square._3._2, 0));
         assertEquals(Sets.newHashSet(pyramid.square._3._2, pyramid.square._4._1, pyramid.triangle3._1._1,
                 pyramid.triangle3._3._2, pyramid.triangle4._2._2, pyramid.triangle4._3._1), vertex4);
 
-        Set<NGMap.Dart> vertex5 = Sets.newHashSet(ngMap.genericIterator(pyramid.triangle1._1._2,
-                Lists.newArrayList(1, 2, 3)));
+        Set<NGMap.Dart> vertex5 = Sets.newHashSet(ngMap.iCell(pyramid.triangle1._1._2, 0));
         assertEquals(Sets.newHashSet(pyramid.triangle1._1._2, pyramid.triangle1._2._1, pyramid.triangle2._2._2,
                 pyramid.triangle2._3._1, pyramid.triangle3._2._2, pyramid.triangle3._3._1, pyramid.triangle4._1._1,
                 pyramid.triangle4._3._2), vertex5);
 
         // 8 edges
-        Set<NGMap.Dart> edge1 = Sets.newHashSet(ngMap.genericIterator(pyramid.square._1._1,
-                Lists.newArrayList(0, 2, 3)));
+        Set<NGMap.Dart> edge1 = Sets.newHashSet(ngMap.iCell(pyramid.square._1._1, 1));
         assertEquals(Sets.newHashSet(pyramid.square._1._1, pyramid.square._1._2, pyramid.triangle1._3._1,
                 pyramid.triangle1._3._2), edge1);
 
-        Set<NGMap.Dart> edge2 = Sets.newHashSet(ngMap.genericIterator(pyramid.square._2._1,
-                Lists.newArrayList(0, 2, 3)));
+        Set<NGMap.Dart> edge2 = Sets.newHashSet(ngMap.iCell(pyramid.square._2._1, 1));
         assertEquals(Sets.newHashSet(pyramid.square._2._1, pyramid.square._2._2, pyramid.triangle2._1._1,
                 pyramid.triangle2._1._2), edge2);
 
-        Set<NGMap.Dart> edge3 = Sets.newHashSet(ngMap.genericIterator(pyramid.square._3._1,
-                Lists.newArrayList(0, 2, 3)));
+        Set<NGMap.Dart> edge3 = Sets.newHashSet(ngMap.iCell(pyramid.square._3._1, 1));
         assertEquals(Sets.newHashSet(pyramid.square._3._1, pyramid.square._3._2, pyramid.triangle3._1._1,
                 pyramid.triangle3._1._2), edge3);
 
-        Set<NGMap.Dart> edge4 = Sets.newHashSet(ngMap.genericIterator(pyramid.square._4._1,
-                Lists.newArrayList(0, 2, 3)));
+        Set<NGMap.Dart> edge4 = Sets.newHashSet(ngMap.iCell(pyramid.square._4._1, 1));
         assertEquals(Sets.newHashSet(pyramid.square._4._1, pyramid.square._4._2, pyramid.triangle4._2._1,
                 pyramid.triangle4._2._2), edge4);
 
         // 5 faces
-        Set<NGMap.Dart> face1 = Sets.newHashSet(ngMap.genericIterator(pyramid.square._1._1,
-                Lists.newArrayList(0, 1, 3)));
+        Set<NGMap.Dart> face1 = Sets.newHashSet(ngMap.iCell(pyramid.square._1._1, 2));
         assertEquals(Sets.newHashSet(pyramid.square._1._1, pyramid.square._1._2, pyramid.square._2._1,
                 pyramid.square._2._2, pyramid.square._3._1, pyramid.square._3._2, pyramid.square._4._1,
                 pyramid.square._4._2), face1);
 
-        Set<NGMap.Dart> face2 = Sets.newHashSet(ngMap.genericIterator(pyramid.triangle1._1._1,
-                Lists.newArrayList(0, 1, 3)));
+        Set<NGMap.Dart> face2 = Sets.newHashSet(ngMap.iCell(pyramid.triangle1._1._1, 2));
         assertEquals(Sets.newHashSet(pyramid.triangle1._1._1, pyramid.triangle1._1._2, pyramid.triangle1._2._1,
                 pyramid.triangle1._2._2, pyramid.triangle1._3._1, pyramid.triangle1._3._2), face2);
 
-        Set<NGMap.Dart> face3 = Sets.newHashSet(ngMap.genericIterator(pyramid.triangle2._1._1,
-                Lists.newArrayList(0, 1, 3)));
+        Set<NGMap.Dart> face3 = Sets.newHashSet(ngMap.iCell(pyramid.triangle2._1._1, 2));
         assertEquals(Sets.newHashSet(pyramid.triangle2._1._1, pyramid.triangle2._1._2, pyramid.triangle2._2._1,
                 pyramid.triangle2._2._2, pyramid.triangle2._3._1, pyramid.triangle2._3._2), face3);
 
-        Set<NGMap.Dart> face4 = Sets.newHashSet(ngMap.genericIterator(pyramid.triangle3._1._1,
-                Lists.newArrayList(0, 1, 3)));
+        Set<NGMap.Dart> face4 = Sets.newHashSet(ngMap.iCell(pyramid.triangle3._1._1, 2));
         assertEquals(Sets.newHashSet(pyramid.triangle3._1._1, pyramid.triangle3._1._2, pyramid.triangle3._2._1,
                 pyramid.triangle3._2._2, pyramid.triangle3._3._1, pyramid.triangle3._3._2), face4);
 
-        Set<NGMap.Dart> face5 = Sets.newHashSet(ngMap.genericIterator(pyramid.triangle4._1._1,
-                Lists.newArrayList(0, 1, 3)));
+        Set<NGMap.Dart> face5 = Sets.newHashSet(ngMap.iCell(pyramid.triangle4._1._1, 2));
         assertEquals(Sets.newHashSet(pyramid.triangle4._1._1, pyramid.triangle4._1._2, pyramid.triangle4._2._1,
                 pyramid.triangle4._2._2, pyramid.triangle4._3._1, pyramid.triangle4._3._2), face5);
     }
 
     @Test
-    public void houseIsCubePlusPyramidVia4Vertices4Edges2Faces() {
-        NGMap ngMap = NGMap.ngMap(3);
+    public <A> void houseIsCubePlusPyramidVia4Vertices4Edges2Faces() {
+        NGMap<A> ngMap = NGMap.ngMap(3);
         House house = addHouse(ngMap);
 
         // We assert that vertices, edges, and faces are valid for the cube and pyramid independently, here we assert
         // validity of the vertices, edges, and faces of both volumes, i.e. the intersection
 
         // 4 vertices
-        Set<NGMap.Dart> vertex1 = Sets.newHashSet(ngMap.genericIterator(house.cube._1._1._1,
-                Lists.newArrayList(1, 2, 3)));
-        assertEquals(ImmutableSet.builder().addAll(ngMap.genericIterator(house.cube._1._1._1,
-                Lists.newArrayList(1, 2))).addAll(ngMap.genericIterator(house.pyramid.square._1._1,
-                Lists.newArrayList(1, 2))).build(), vertex1);
+        Set<NGMap.Dart> vertex1 = Sets.newHashSet(ngMap.iCell(house.cube._1._1._1, 0));
+        assertEquals(ImmutableSet.builder()
+                .addAll(ngMap.iCell(house.cube._1._1._1, 0))
+                .addAll(ngMap.iCell(house.pyramid.square._1._1, 0))
+                .build(), vertex1);
 
-        Set<NGMap.Dart> vertex2 = Sets.newHashSet(ngMap.genericIterator(house.cube._1._1._2,
-                Lists.newArrayList(1, 2, 3)));
-        assertEquals(ImmutableSet.builder().addAll(ngMap.genericIterator(house.cube._1._1._2,
-                Lists.newArrayList(1, 2))).addAll(ngMap.genericIterator(house.pyramid.square._1._2,
-                Lists.newArrayList(1, 2))).build(), vertex2);
+        Set<NGMap.Dart> vertex2 = Sets.newHashSet(ngMap.iCell(house.cube._1._1._2, 0));
+        assertEquals(ImmutableSet.builder()
+                .addAll(ngMap.iCell(house.cube._1._1._2, 0))
+                .addAll(ngMap.iCell(house.pyramid.square._1._2, 0))
+                .build(), vertex2);
 
-        Set<NGMap.Dart> vertex3 = Sets.newHashSet(ngMap.genericIterator(house.cube._1._2._1,
-                Lists.newArrayList(1, 2, 3)));
-        assertEquals(ImmutableSet.builder().addAll(ngMap.genericIterator(house.cube._1._2._1,
-                Lists.newArrayList(1, 2))).addAll(ngMap.genericIterator(house.pyramid.square._2._1,
-                Lists.newArrayList(1, 2))).build(), vertex3);
+        Set<NGMap.Dart> vertex3 = Sets.newHashSet(ngMap.iCell(house.cube._1._2._1, 0));
+        assertEquals(ImmutableSet.builder()
+                .addAll(ngMap.iCell(house.cube._1._2._1, 0))
+                .addAll(ngMap.iCell(house.pyramid.square._2._1, 0))
+                .build(), vertex3);
 
-        Set<NGMap.Dart> vertex4 = Sets.newHashSet(ngMap.genericIterator(house.cube._1._2._2,
-                Lists.newArrayList(1, 2, 3)));
-        assertEquals(ImmutableSet.builder().addAll(ngMap.genericIterator(house.cube._1._2._2,
-                Lists.newArrayList(1, 2))).addAll(ngMap.genericIterator(house.pyramid.square._2._2,
-                Lists.newArrayList(1, 2))).build(), vertex4);
+        Set<NGMap.Dart> vertex4 = Sets.newHashSet(ngMap.iCell(house.cube._1._2._2, 0));
+        assertEquals(ImmutableSet.builder()
+                .addAll(ngMap.iCell(house.cube._1._2._2, 0))
+                .addAll(ngMap.iCell(house.pyramid.square._2._2, 0))
+                .build(), vertex4);
 
         // 4 edges
-        Set<NGMap.Dart> edge1 = Sets.newHashSet(ngMap.genericIterator(house.cube._1._1._1,
-                Lists.newArrayList(0, 2, 3)));
-        assertEquals(ImmutableSet.builder().addAll(ngMap.genericIterator(house.cube._1._1._1,
-                Lists.newArrayList(0, 2))).addAll(ngMap.genericIterator(house.pyramid.square._1._1,
-                Lists.newArrayList(0, 2))).build(), edge1);
+        Set<NGMap.Dart> edge1 = Sets.newHashSet(ngMap.iCell(house.cube._1._1._1, 1));
+        assertEquals(ImmutableSet.builder()
+                .addAll(ngMap.iCell(house.cube._1._1._1, 1))
+                .addAll(ngMap.iCell(house.pyramid.square._1._1, 1)).build(), edge1);
 
-        Set<NGMap.Dart> edge2 = Sets.newHashSet(ngMap.genericIterator(house.cube._1._2._1,
-                Lists.newArrayList(0, 2, 3)));
-        assertEquals(ImmutableSet.builder().addAll(ngMap.genericIterator(house.cube._1._2._1,
-                Lists.newArrayList(0, 2))).addAll(ngMap.genericIterator(house.pyramid.square._2._1,
-                Lists.newArrayList(0, 2))).build(), edge2);
+        Set<NGMap.Dart> edge2 = Sets.newHashSet(ngMap.iCell(house.cube._1._2._1, 1));
+        assertEquals(ImmutableSet.builder()
+                .addAll(ngMap.iCell(house.cube._1._2._1, 1))
+                .addAll(ngMap.iCell(house.pyramid.square._2._1, 1))
+                .build(), edge2);
 
-        Set<NGMap.Dart> edge3 = Sets.newHashSet(ngMap.genericIterator(house.cube._1._3._1,
-                Lists.newArrayList(0, 2, 3)));
-        assertEquals(ImmutableSet.builder().addAll(ngMap.genericIterator(house.cube._1._3._1,
-                Lists.newArrayList(0, 2))).addAll(ngMap.genericIterator(house.pyramid.square._3._1,
-                Lists.newArrayList(0, 2))).build(), edge3);
+        Set<NGMap.Dart> edge3 = Sets.newHashSet(ngMap.iCell(house.cube._1._3._1, 1));
+        assertEquals(ImmutableSet.builder()
+                .addAll(ngMap.iCell(house.cube._1._3._1, 1))
+                .addAll(ngMap.iCell(house.pyramid.square._3._1, 1))
+                .build(), edge3);
 
-        Set<NGMap.Dart> edge4 = Sets.newHashSet(ngMap.genericIterator(house.cube._1._4._1,
-                Lists.newArrayList(0, 2, 3)));
-        assertEquals(ImmutableSet.builder().addAll(ngMap.genericIterator(house.cube._1._4._1,
-                Lists.newArrayList(0, 2))).addAll(ngMap.genericIterator(house.pyramid.square._4._1,
-                Lists.newArrayList(0, 2))).build(), edge4);
+        Set<NGMap.Dart> edge4 = Sets.newHashSet(ngMap.iCell(house.cube._1._4._1, 1));
+        assertEquals(ImmutableSet.builder()
+                .addAll(ngMap.iCell(house.cube._1._4._1, 1))
+                .addAll(ngMap.iCell(house.pyramid.square._4._1, 1))
+                .build(), edge4);
 
         // 1 face
-        Set<NGMap.Dart> face1 = Sets.newHashSet(ngMap.genericIterator(house.cube._1._1._1,
-                Lists.newArrayList(0, 1, 3)));
-        assertEquals(ImmutableSet.builder().addAll(ngMap.genericIterator(house.cube._1._1._1,
-                Lists.newArrayList(0, 1))).addAll(ngMap.genericIterator(house.pyramid.square._1._1,
-                Lists.newArrayList(0, 1))).build(), face1);
+        Set<NGMap.Dart> face1 = Sets.newHashSet(ngMap.iCell(house.cube._1._1._1, 2));
+        assertEquals(ImmutableSet.builder()
+                .addAll(ngMap.iCell(house.cube._1._1._1, 2))
+                .addAll(ngMap.iCell(house.pyramid.square._1._1, 2))
+                .build(), face1);
     }
 
     @Test
-    public void canMakeACylinder() {
-        NGMap ngMap = NGMap.ngMap(2);
+    public <A> void canMakeACylinder() {
+        NGMap<A> ngMap = NGMap.ngMap(2);
         Square square = addSquare(ngMap);
 
         ngMap.sew(square._2._1, square._4._2, 2);
 
         // 2 vertices
-        Set<NGMap.Dart> vertex1 = Sets.newHashSet(ngMap.genericIterator(square._1._1,
-                Lists.newArrayList(1, 2)));
+        Set<NGMap.Dart> vertex1 = Sets.newHashSet(ngMap.iCell(square._1._1, 0));
         assertEquals(Sets.newHashSet(square._1._1, square._4._2, square._1._2, square._2._1), vertex1);
 
-        Set<NGMap.Dart> vertex2 = Sets.newHashSet(ngMap.genericIterator(square._3._1,
-                Lists.newArrayList(1, 2)));
+        Set<NGMap.Dart> vertex2 = Sets.newHashSet(ngMap.iCell(square._3._1, 0));
         assertEquals(Sets.newHashSet(square._3._1, square._2._2, square._3._2, square._4._1), vertex2);
 
         // Only 1 face with all the darts
-        Set<NGMap.Dart> face1 = Sets.newHashSet(ngMap.genericIterator(square._1._1,
-                Lists.newArrayList(0, 1)));
+        Set<NGMap.Dart> face1 = Sets.newHashSet(ngMap.iCell(square._1._1, 2));
         assertEquals(Sets.newHashSet(square._1._1, square._1._2, square._2._1, square._2._2, square._3._1, square._3._2,
                 square._4._1, square._4._2), face1);
 
@@ -674,7 +656,7 @@ public class NGMapTest {
         return new Pyramid(square, triangle1, triangle2, triangle3, triangle4);
     }
 
-    public House addHouse(NGMap ngMap) {
+    private House addHouse(NGMap ngMap) {
         Cube cube = addCube(ngMap);
         Pyramid pyramid = addPyramid(ngMap);
 

@@ -2,6 +2,8 @@ package com.geoffslittle.datastructure.generalizedmap;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import fj.P;
+import fj.P2;
 import lombok.NonNull;
 import lombok.Value;
 
@@ -11,33 +13,39 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
  * This implementation of an n-Gmap guarantees that any interaction with an n-GMap produces a valid n-GMap
  */
-public class NGMap {
+public class NGMap<A> {
 
     /**
      * The list of alphas that define the mappings of the n-Gmap. We assume each alpha to be a partial involution
      * without fixed point.
      */
     @NonNull
-    public final List<Involution<Dart>> alphas;
+    private final List<Involution<Dart>> alphas;
+    @NonNull
+    private final SafeMap<P2<Dart, Integer>, A> attributes;
+
 
     private NGMap() {
         this.alphas = Lists.newArrayList(Involution.involution());
+        this.attributes = SafeMap.newSafeMap();
     }
 
     /**
      * Basic public static constructor
      * @return a 0-GMap
      */
-    public static NGMap ngMap() {
-        return new NGMap();
+    public static <A> NGMap<A> ngMap() {
+        return new NGMap<A>();
     }
 
     public int dimension() {
@@ -63,8 +71,8 @@ public class NGMap {
      * @param n, the desired dimension of the n-GMap
      * @return an n-GMap of desired dimension, n
      */
-    public static NGMap ngMap(int n) {
-        NGMap nGMap = NGMap.ngMap();
+    public static <A> NGMap<A> ngMap(int n) {
+        NGMap<A> nGMap = NGMap.ngMap();
         IntStream.range(0, n).forEach(i -> nGMap.increaseDimension());
         return nGMap;
     }
@@ -116,10 +124,17 @@ public class NGMap {
         Function<Dart, List<Dart>> f = d -> intsToAlphas(ints).stream()
                 .map(alpha -> alpha.get(d))
                 // TODO: When Java 9 is released, the filtering and mapping of Optionals should be easier
-                .filter(o -> o.isPresent())
-                .map(o -> o.get())
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collect(Collectors.toList());
         return BreadthFirstSearch.breadthFirstSearch(dart, f);
+    }
+
+    private List<Integer> filterIntList(@NonNull Integer i, Predicate<Integer> predicate) {
+        return IntStream.range(0, dimension() + 1)
+                .filter(j -> predicate.test(j))
+                .boxed()
+                .collect(Collectors.toList());
     }
 
     /**
@@ -127,11 +142,12 @@ public class NGMap {
      * @param i
      * @return
      */
-    private List<Integer> specialRange(int i) {
-        return IntStream.range(0, dimension() + 1)
-                .filter(j -> j <= i-2 || i+2 <= j)
-                .boxed()
-                .collect(Collectors.toList());
+    private List<Integer> specialRange(@NonNull Integer i) {
+        return filterIntList(i, j -> j <= i-2 || i+2 <= j);
+    }
+
+    private List<Integer> excludeFromRange(@NonNull Integer i) {
+        return filterIntList(i, j -> j != i);
     }
 
     private boolean hasIsomorphismAndNonEqualOrbits(Iterator<Dart> leftIt, Iterator<Dart> rightIt,
@@ -146,23 +162,20 @@ public class NGMap {
             rightOrbit.add(rightCurr);
             iso.put(leftCurr, rightCurr);
             for (Involution<Dart> alpha : alphas) {
-                if (iso.containsKey(alpha.get(leftCurr)) && !iso.get(alpha.get(leftCurr)).equals(alpha.get(rightCurr))) {
+                if (alpha.get(leftCurr).isPresent()
+                        && iso.containsKey(alpha.get(leftCurr).get())
+                        && alpha.get(rightCurr).isPresent()
+                        && !iso.get(alpha.get(leftCurr).get()).equals(alpha.get(rightCurr).get())) {
                     return false;
                 }
             }
         }
 
-        if (leftIt.hasNext() || rightIt.hasNext() || Objects.equals(leftOrbit, rightOrbit)) {
-            return false;
-        }
-        return true;
+        return !(leftIt.hasNext() || rightIt.hasNext() || Objects.equals(leftOrbit, rightOrbit));
     }
 
     private boolean dartsNotEqualAndFree(Dart leftDart, Dart rightDart, int i) {
-        if (leftDart.equals(rightDart) || !isIFree(leftDart, i) || !isIFree(rightDart, i)) {
-            return false;
-        }
-        return true;
+        return !(leftDart.equals(rightDart) || !isIFree(leftDart, i) || !isIFree(rightDart, i));
     }
 
     /**
@@ -217,6 +230,33 @@ public class NGMap {
         }
     }
 
+    public List<Dart> iCell(@NonNull Dart dart, @NonNull Integer i) {
+        return Lists.newArrayList(genericIterator(dart, excludeFromRange(i)));
+    }
+
+    public void putAttribute(@NonNull Dart dart, @NonNull Integer i, A attribute) {
+        // Get the i-cell for the given dart
+        List<Dart> iCell = iCell(dart, i);
+        iCell.stream().forEach(curr -> Preconditions.checkState(Optional.empty().equals(attributes.get(P.p(curr, i)))));
+        attributes.put(P.p(dart, i), Optional.of(attribute));
+    }
+
+    public void removeAttribute(@NonNull Dart dart, @NonNull Integer i) {
+        // Get the i-cell for the given dart
+        List<Dart> iCell = iCell(dart, i);
+        // Remove any and all associations with each dart in the i-cell
+        iCell.stream().forEach(curr -> attributes.put(P.p(curr, i), Optional.empty()));
+    }
+
+    public Optional<A> getAttribute(@NonNull Dart dart, @NonNull Integer i) {
+        List<Dart> iCell = iCell(dart, i);
+        return iCell.stream()
+                .map(curr -> attributes.get(P.p(curr, i)))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
+    }
+
     private final Iterator<Integer> ids = new Iterator<Integer>() {
         private int i = 1;
         @Override
@@ -230,7 +270,7 @@ public class NGMap {
     };
 
     @Value
-    public final class Dart {
+    public static final class Dart {
         private final int id;
     }
 
