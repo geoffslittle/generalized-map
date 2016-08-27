@@ -7,6 +7,7 @@ import lombok.Data;
 import org.junit.Test;
 
 import java.util.Iterator;
+import java.util.Optional;
 import java.util.Set;
 
 import static junit.framework.TestCase.assertFalse;
@@ -14,6 +15,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class NGMapTest {
+
+    private static final String VERTEX_1 = "vertex-1";
+    private static final String VERTEX_2 = "vertex-2";
+    private static final String VERTEX_3 = "vertex-3";
+    private static final String VERTEX_4 = "vertex-4";
+    private static final String EDGE_1 = "edge-1";
+    private static final String EDGE_2 = "edge-2";
+    private static final String EDGE_3 = "edge-3";
+    private static final String EDGE_4 = "edge-4";
 
     @Test
     public void noArgsConstructorIs0D() {
@@ -540,6 +550,75 @@ public class NGMapTest {
 
         // Should be prohibited
         ngMap.sew(edge4._2, edge5._1, 2);
+    }
+
+    @Test
+    public void canPutAndGetAttribute() {
+        NGMap<String> intNGMap = NGMap.ngMap(2);
+        Square square = addSquare(intNGMap);
+        intNGMap.putAttribute(square._1._1, 0, VERTEX_1);
+        intNGMap.putAttribute(square._2._1, 0, VERTEX_2);
+        intNGMap.putAttribute(square._3._1, 0, VERTEX_3);
+        intNGMap.putAttribute(square._4._1, 0, VERTEX_4);
+
+        intNGMap.putAttribute(square._1._1, 1, EDGE_1);
+        intNGMap.putAttribute(square._2._1, 1, EDGE_2);
+        intNGMap.putAttribute(square._3._1, 1, EDGE_3);
+        intNGMap.putAttribute(square._4._1, 1, EDGE_4);
+
+        assertEquals(VERTEX_1, intNGMap.getAttribute(square._1._1, 0).get());
+        assertEquals(VERTEX_1, intNGMap.getAttribute(square._4._2, 0).get());
+
+        assertEquals(VERTEX_2, intNGMap.getAttribute(square._2._1, 0).get());
+        assertEquals(VERTEX_2, intNGMap.getAttribute(square._1._2, 0).get());
+
+        assertEquals(VERTEX_3, intNGMap.getAttribute(square._3._1, 0).get());
+        assertEquals(VERTEX_3, intNGMap.getAttribute(square._2._2, 0).get());
+
+        assertEquals(VERTEX_4, intNGMap.getAttribute(square._4._1, 0).get());
+        assertEquals(VERTEX_4, intNGMap.getAttribute(square._3._2, 0).get());
+
+
+        assertEquals(EDGE_1, intNGMap.getAttribute(square._1._1, 1).get());
+        assertEquals(EDGE_1, intNGMap.getAttribute(square._1._1, 1).get());
+
+        assertEquals(EDGE_2, intNGMap.getAttribute(square._2._1, 1).get());
+        assertEquals(EDGE_2, intNGMap.getAttribute(square._2._2, 1).get());
+
+        assertEquals(EDGE_3, intNGMap.getAttribute(square._3._1, 1).get());
+        assertEquals(EDGE_3, intNGMap.getAttribute(square._3._2, 1).get());
+
+        assertEquals(EDGE_4, intNGMap.getAttribute(square._4._1, 1).get());
+        assertEquals(EDGE_4, intNGMap.getAttribute(square._4._2, 1).get());
+    }
+
+    @Test
+    public void canPutAndRemoveAttribute() {
+        NGMap<String> intNGMap = NGMap.ngMap(2);
+        Square square = addSquare(intNGMap);
+
+        intNGMap.putAttribute(square._1._1, 0, VERTEX_1);
+        assertEquals(VERTEX_1, intNGMap.getAttribute(square._1._1, 0).get());
+        assertEquals(VERTEX_1, intNGMap.getAttribute(square._4._2, 0).get());
+        intNGMap.removeAttribute(square._1._1, 0);
+        assertEquals(Optional.empty(), intNGMap.getAttribute(square._1._1, 0));
+        assertEquals(Optional.empty(), intNGMap.getAttribute(square._4._2, 0));
+
+        intNGMap.putAttribute(square._1._1, 0, VERTEX_1);
+        assertEquals(VERTEX_1, intNGMap.getAttribute(square._1._1, 0).get());
+        assertEquals(VERTEX_1, intNGMap.getAttribute(square._4._2, 0).get());
+        intNGMap.removeAttribute(square._4._2, 0);
+        assertEquals(Optional.empty(), intNGMap.getAttribute(square._1._1, 0));
+        assertEquals(Optional.empty(), intNGMap.getAttribute(square._4._2, 0));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void cantOverwriteAttribute() {
+        NGMap<String> intNGMap = NGMap.ngMap(2);
+        Square square = addSquare(intNGMap);
+
+        intNGMap.putAttribute(square._1._1, 0, VERTEX_1);
+        intNGMap.putAttribute(square._4._2, 0, VERTEX_1);
     }
 
     /*
