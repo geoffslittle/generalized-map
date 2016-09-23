@@ -1,9 +1,11 @@
 package com.geoffslittle.datastructure.generalizedmap;
 
+import com.geoffslittle.datastructure.maps.Attribute;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import lombok.Data;
+import lombok.Value;
 import org.junit.Test;
 
 import java.util.Iterator;
@@ -114,8 +116,8 @@ public class NGMapTest {
     }
 
     @Test
-    public <A> void sewTwoDartsNonIsolatedAndReachable() {
-        NGMap<A> ngMap = NGMap.ngMap();
+    public void sewTwoDartsNonIsolatedAndReachable() {
+        NGMap ngMap = NGMap.ngMap();
         NGMap.Dart leftDart = ngMap.addIsolatedDart();
         NGMap.Dart rightDart = ngMap.addIsolatedDart();
 
@@ -133,8 +135,8 @@ public class NGMapTest {
     }
 
     @Test
-    public <A> void unsewTwoDarts() {
-        NGMap<A> ngMap = NGMap.ngMap();
+    public void unsewTwoDarts() {
+        NGMap ngMap = NGMap.ngMap();
         NGMap.Dart leftDart = ngMap.addIsolatedDart();
         NGMap.Dart rightDart = ngMap.addIsolatedDart();
 
@@ -156,8 +158,8 @@ public class NGMapTest {
     }
 
     @Test
-    public <A> void create1DManifoldWith3VerticesAnd2Edges() {
-        NGMap<A> ngMap = NGMap.ngMap(1);
+    public void create1DManifoldWith3VerticesAnd2Edges() {
+        NGMap ngMap = NGMap.ngMap(1);
         NGMap.Dart dart1 = ngMap.addIsolatedDart();
         NGMap.Dart dart2 = ngMap.addIsolatedDart();
         NGMap.Dart dart3 = ngMap.addIsolatedDart();
@@ -184,8 +186,8 @@ public class NGMapTest {
     }
 
     @Test
-    public <A> void create2DManifoldWith4Vertices5EdgesAnd2Faces() {
-        NGMap<A> ngMap = NGMap.ngMap(2);
+    public  void create2DManifoldWith4Vertices5EdgesAnd2Faces() {
+        NGMap ngMap = NGMap.ngMap(2);
         NGMap.Dart dart1 = ngMap.addIsolatedDart();
         NGMap.Dart dart2 = ngMap.addIsolatedDart();
         NGMap.Dart dart3 = ngMap.addIsolatedDart();
@@ -262,8 +264,8 @@ public class NGMapTest {
     }
 
     @Test
-    public <A> void cubeHas8Vertices12Edges6Faces() {
-        NGMap<A> ngMap = NGMap.ngMap(3);
+    public  void cubeHas8Vertices12Edges6Faces() {
+        NGMap ngMap = NGMap.ngMap(3);
         Cube cube = addCube(ngMap);
 
         // 8 vertices
@@ -352,8 +354,8 @@ public class NGMapTest {
     }
 
     @Test
-    public <A> void pyramidHas5Vertices8Edges5Faces() {
-        NGMap<A> ngMap = NGMap.ngMap(3);
+    public  void pyramidHas5Vertices8Edges5Faces() {
+        NGMap ngMap = NGMap.ngMap(3);
         Pyramid pyramid = addPyramid(ngMap);
 
         // 5 vertices
@@ -419,8 +421,8 @@ public class NGMapTest {
     }
 
     @Test
-    public <A> void houseIsCubePlusPyramidVia4Vertices4Edges2Faces() {
-        NGMap<A> ngMap = NGMap.ngMap(3);
+    public  void houseIsCubePlusPyramidVia4Vertices4Edges2Faces() {
+        NGMap ngMap = NGMap.ngMap(3);
         House house = addHouse(ngMap);
 
         // We assert that vertices, edges, and faces are valid for the cube and pyramid independently, here we assert
@@ -484,8 +486,8 @@ public class NGMapTest {
     }
 
     @Test
-    public <A> void canMakeACylinder() {
-        NGMap<A> ngMap = NGMap.ngMap(2);
+    public  void canMakeACylinder() {
+        NGMap ngMap = NGMap.ngMap(2);
         Square square = addSquare(ngMap);
 
         ngMap.sew(square._2._1, square._4._2, 2);
@@ -532,13 +534,13 @@ public class NGMapTest {
          */
 
         NGMap ngMap = NGMap.ngMap(2);
-        Edge edge1 = addEdge(ngMap);
-        Edge edge2 = addEdge(ngMap);
-        Edge edge3 = addEdge(ngMap);
-        Edge edge4 = addEdge(ngMap);
-        Edge edge5 = addEdge(ngMap);
-        Edge edge6 = addEdge(ngMap);
-        Edge edge7 = addEdge(ngMap);
+        NGMap.Edge edge1 = addEdge(ngMap);
+        NGMap.Edge edge2 = addEdge(ngMap);
+        NGMap.Edge edge3 = addEdge(ngMap);
+        NGMap.Edge edge4 = addEdge(ngMap);
+        NGMap.Edge edge5 = addEdge(ngMap);
+        NGMap.Edge edge6 = addEdge(ngMap);
+        NGMap.Edge edge7 = addEdge(ngMap);
 
         ngMap.sew(edge1._1, edge7._2, 1);
         ngMap.sew(edge2._1, edge1._2, 1);
@@ -554,17 +556,17 @@ public class NGMapTest {
 
     @Test
     public void canPutAndGetAttribute() {
-        NGMap<String> intNGMap = NGMap.ngMap(2);
+        NGMap intNGMap = NGMap.ngMap(2);
         Square square = addSquare(intNGMap);
-        intNGMap.putAttribute(square._1._1, 0, VERTEX_1);
-        intNGMap.putAttribute(square._2._1, 0, VERTEX_2);
-        intNGMap.putAttribute(square._3._1, 0, VERTEX_3);
-        intNGMap.putAttribute(square._4._1, 0, VERTEX_4);
+        intNGMap.putAttribute(square._1._1, 0, new StringAttr(VERTEX_1));
+        intNGMap.putAttribute(square._2._1, 0, new StringAttr(VERTEX_2));
+        intNGMap.putAttribute(square._3._1, 0, new StringAttr(VERTEX_3));
+        intNGMap.putAttribute(square._4._1, 0, new StringAttr(VERTEX_4));
 
-        intNGMap.putAttribute(square._1._1, 1, EDGE_1);
-        intNGMap.putAttribute(square._2._1, 1, EDGE_2);
-        intNGMap.putAttribute(square._3._1, 1, EDGE_3);
-        intNGMap.putAttribute(square._4._1, 1, EDGE_4);
+        intNGMap.putAttribute(square._1._1, 1, new StringAttr(EDGE_1));
+        intNGMap.putAttribute(square._2._1, 1, new StringAttr(EDGE_2));
+        intNGMap.putAttribute(square._3._1, 1, new StringAttr(EDGE_3));
+        intNGMap.putAttribute(square._4._1, 1, new StringAttr(EDGE_4));
 
         assertEquals(VERTEX_1, intNGMap.getAttribute(square._1._1, 0).get());
         assertEquals(VERTEX_1, intNGMap.getAttribute(square._4._2, 0).get());
@@ -594,17 +596,17 @@ public class NGMapTest {
 
     @Test
     public void canPutAndRemoveAttribute() {
-        NGMap<String> intNGMap = NGMap.ngMap(2);
+        NGMap intNGMap = NGMap.ngMap(2);
         Square square = addSquare(intNGMap);
 
-        intNGMap.putAttribute(square._1._1, 0, VERTEX_1);
+        intNGMap.putAttribute(square._1._1, 0, new StringAttr(VERTEX_1));
         assertEquals(VERTEX_1, intNGMap.getAttribute(square._1._1, 0).get());
         assertEquals(VERTEX_1, intNGMap.getAttribute(square._4._2, 0).get());
         intNGMap.removeAttribute(square._1._1, 0);
         assertEquals(Optional.empty(), intNGMap.getAttribute(square._1._1, 0));
         assertEquals(Optional.empty(), intNGMap.getAttribute(square._4._2, 0));
 
-        intNGMap.putAttribute(square._1._1, 0, VERTEX_1);
+        intNGMap.putAttribute(square._1._1, 0, new StringAttr(VERTEX_1));
         assertEquals(VERTEX_1, intNGMap.getAttribute(square._1._1, 0).get());
         assertEquals(VERTEX_1, intNGMap.getAttribute(square._4._2, 0).get());
         intNGMap.removeAttribute(square._4._2, 0);
@@ -614,30 +616,35 @@ public class NGMapTest {
 
     @Test(expected = IllegalStateException.class)
     public void cantOverwriteAttribute() {
-        NGMap<String> intNGMap = NGMap.ngMap(2);
+        NGMap intNGMap = NGMap.ngMap(2);
         Square square = addSquare(intNGMap);
 
-        intNGMap.putAttribute(square._1._1, 0, VERTEX_1);
-        intNGMap.putAttribute(square._4._2, 0, VERTEX_1);
+        intNGMap.putAttribute(square._1._1, 0, new StringAttr(VERTEX_1));
+        intNGMap.putAttribute(square._4._2, 0, new StringAttr(VERTEX_1));
+    }
+
+    @Value
+    private static class StringAttr implements Attribute {
+        private final String string;
     }
 
     /*
      *    d1     d2
      *     *-- --*
      */
-    private Edge addEdge(NGMap ngMap) {
+    private NGMap.Edge addEdge(NGMap ngMap) {
         NGMap.Dart dart1 = ngMap.addIsolatedDart();
         NGMap.Dart dart2 = ngMap.addIsolatedDart();
 
         ngMap.sew(dart1, dart2, 0);
 
-        return new Edge(dart1, dart2);
+        return new NGMap.Edge(dart1, dart2);
     }
 
     private Triangle addTriangle(NGMap ngMap) {
-        Edge edge1 = addEdge(ngMap);
-        Edge edge2 = addEdge(ngMap);
-        Edge edge3 = addEdge(ngMap);
+        NGMap.Edge edge1 = addEdge(ngMap);
+        NGMap.Edge edge2 = addEdge(ngMap);
+        NGMap.Edge edge3 = addEdge(ngMap);
 
         ngMap.sew(edge1.get_1(), edge3.get_2(), 1);
         ngMap.sew(edge2.get_1(), edge1.get_2(), 1);
@@ -658,10 +665,10 @@ public class NGMapTest {
      *       d6      d5
      */
     private Square addSquare(NGMap ngMap) {
-        Edge edge1 = addEdge(ngMap);
-        Edge edge2 = addEdge(ngMap);
-        Edge edge3 = addEdge(ngMap);
-        Edge edge4 = addEdge(ngMap);
+        NGMap.Edge edge1 = addEdge(ngMap);
+        NGMap.Edge edge2 = addEdge(ngMap);
+        NGMap.Edge edge3 = addEdge(ngMap);
+        NGMap.Edge edge4 = addEdge(ngMap);
 
         ngMap.sew(edge1.get_1(), edge4.get_2(), 1);
         ngMap.sew(edge2.get_1(), edge1.get_2(), 1);
@@ -740,30 +747,26 @@ public class NGMapTest {
         Pyramid pyramid = addPyramid(ngMap);
 
         // Only need to sew dart to sew the volumes together!
-        ngMap.sew(cube._1._1._1, pyramid.square._1._1, 3);
+        ngMap.sew(cube._1._1.get_1(), pyramid.square._1.get_1(), 3);
 
         return new House(cube, pyramid);
     }
 
-    @Data
-    private static final class Edge {
-        private final NGMap.Dart _1;
-        private final NGMap.Dart _2;
-    }
+
 
     @Data
     private static final class Triangle {
-        private final Edge _1;
-        private final Edge _2;
-        private final Edge _3;
+        private final NGMap.Edge _1;
+        private final NGMap.Edge _2;
+        private final NGMap.Edge _3;
     }
 
     @Data
     private static final class Square {
-        private final Edge _1;
-        private final Edge _2;
-        private final Edge _3;
-        private final Edge _4;
+        private final NGMap.Edge _1;
+        private final NGMap.Edge _2;
+        private final NGMap.Edge _3;
+        private final NGMap.Edge _4;
     }
 
     @Data

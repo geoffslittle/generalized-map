@@ -59,4 +59,9 @@ public class SafeMap<K, V> extends AbstractMap<K, Optional<V>> implements Map<K,
         return unsafeMap.put(key, value);
     }
 
+    @Override
+    public Optional<V> remove(@NonNull Object key) {
+        return Optional.ofNullable(unsafeMap.remove(key)).flatMap(Function.identity());
+    }
+
 }

@@ -3,6 +3,7 @@ package com.geoffslittle.datastructure.generalizedmap;
 import com.google.common.base.Preconditions;
 import lombok.NonNull;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -42,7 +43,7 @@ public class Involution<E> {
      */
     public Set<E> domainSet() {
         return safeMap.entrySet().stream()
-                .map(entry -> entry.getKey())
+                .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
     }
 
@@ -84,7 +85,7 @@ public class Involution<E> {
      */
     public void remove(@NonNull E element) {
         // Remove inverse
-        safeMap.get(element).ifPresent(coelementGuts -> safeMap.remove(coelementGuts));
+        safeMap.get(element).ifPresent(safeMap::remove);
         safeMap.remove(element);
     }
 

@@ -1,5 +1,6 @@
 package com.geoffslittle.datastructure.generalizedmap;
 
+import com.geoffslittle.datastructure.maps.Attribute;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import fj.P;
@@ -23,7 +24,7 @@ import java.util.stream.IntStream;
 /**
  * This implementation of an n-Gmap guarantees that any interaction with an n-GMap produces a valid n-GMap
  */
-public class NGMap<A> {
+public class NGMap {
 
     /**
      * The list of alphas that define the mappings of the n-Gmap. We assume each alpha to be a partial involution
@@ -32,7 +33,8 @@ public class NGMap<A> {
     @NonNull
     private final List<Involution<Dart>> alphas;
     @NonNull
-    private final SafeMap<P2<Dart, Integer>, A> attributes;
+    private final SafeMap<P2<Dart, Integer>, Attribute> attributes;
+    // TODO: Decide if this should be generic in A or accept any Object (different attributes for different i-cells)
 
 
     private NGMap() {
@@ -44,8 +46,8 @@ public class NGMap<A> {
      * Basic public static constructor
      * @return a 0-GMap
      */
-    public static <A> NGMap<A> ngMap() {
-        return new NGMap<A>();
+    public static NGMap ngMap() {
+        return new NGMap();
     }
 
     public int dimension() {
@@ -71,8 +73,8 @@ public class NGMap<A> {
      * @param n, the desired dimension of the n-GMap
      * @return an n-GMap of desired dimension, n
      */
-    public static <A> NGMap<A> ngMap(int n) {
-        NGMap<A> nGMap = NGMap.ngMap();
+    public static NGMap ngMap(int n) {
+        NGMap nGMap = NGMap.ngMap();
         IntStream.range(0, n).forEach(i -> nGMap.increaseDimension());
         return nGMap;
     }
@@ -114,6 +116,13 @@ public class NGMap<A> {
     public void removeIsolatedDart(@NonNull Dart dart) {
         Preconditions.checkState(isIsolated(dart), "dart is not isolated");
         alphas.stream().forEach(alpha -> alpha.remove(dart));
+    }
+
+    public Set<Dart> darts() {
+        return alphas.stream()
+                .map(Involution::domainSet)
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
     }
 
     private List<Involution<Dart>> intsToAlphas(List<Integer> ints) {
@@ -221,7 +230,9 @@ public class NGMap<A> {
 
     public void unsew(@NonNull Dart dart, int i) {
         checkValidDimension(i);
-        Preconditions.checkState(!isIFree(dart, i), "dart is already i-free");
+
+        // It's fine if it's already i-free, the client is happy
+        // Preconditions.checkState(!isIFree(dart, i), "dart is already i-free");
 
         Involution<Dart> alpha = alphas.get(i);
         List<Dart> orbit = Lists.newArrayList(genericIterator(dart, specialRange(i)));
@@ -230,15 +241,37 @@ public class NGMap<A> {
         }
     }
 
+    public Edge addEdge() {
+        NGMap.Dart dart1 = addIsolatedDart();
+        NGMap.Dart dart2 = addIsolatedDart();
+
+        sew(dart1, dart2, 0);
+
+        return new Edge(dart1, dart2);
+    }
+
+    public List<Edge> addNPolygon(@NonNull Integer n) {
+        Edge firstEdge = addEdge();
+        Edge lastEdge = firstEdge;
+        for (int i = 1; i < n; i++) {
+            Edge currEdge = addEdge();
+            sew(lastEdge.get_2(), currEdge.get_1(), 1);
+            lastEdge = currEdge;
+        }
+        sew(lastEdge.get_2(), firstEdge.get_1(), 1);
+        return null;
+    }
+
     public List<Dart> iCell(@NonNull Dart dart, @NonNull Integer i) {
         return Lists.newArrayList(genericIterator(dart, excludeFromRange(i)));
     }
 
-    public void putAttribute(@NonNull Dart dart, @NonNull Integer i, A attribute) {
+    public Attribute putAttribute(@NonNull Dart dart, @NonNull Integer i, Attribute attribute) {
         // Get the i-cell for the given dart
         List<Dart> iCell = iCell(dart, i);
         iCell.stream().forEach(curr -> Preconditions.checkState(Optional.empty().equals(attributes.get(P.p(curr, i)))));
         attributes.put(P.p(dart, i), Optional.of(attribute));
+        return attribute;
     }
 
     public void removeAttribute(@NonNull Dart dart, @NonNull Integer i) {
@@ -248,7 +281,7 @@ public class NGMap<A> {
         iCell.stream().forEach(curr -> attributes.put(P.p(curr, i), Optional.empty()));
     }
 
-    public Optional<A> getAttribute(@NonNull Dart dart, @NonNull Integer i) {
+    public Optional<Attribute> getAttribute(@NonNull Dart dart, @NonNull Integer i) {
         List<Dart> iCell = iCell(dart, i);
         return iCell.stream()
                 .map(curr -> attributes.get(P.p(curr, i)))
@@ -272,6 +305,12 @@ public class NGMap<A> {
     @Value
     public static final class Dart {
         private final int id;
+    }
+
+    @Value
+    public static final class Edge {
+        private final Dart _1;
+        private final Dart _2;
     }
 
 }
